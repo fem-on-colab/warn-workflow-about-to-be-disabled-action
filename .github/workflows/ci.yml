@@ -16,3 +16,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          pip3 -q install -r scripts/requirements.txt -r tests/requirements.txt
+      - name: Run flake8 checks
+        run: |
+          flake8
+      - name: Run tests
+        run: |
+          pytest tests
+      - name: Warn if scheduled workflow is about to be disabled
+        uses: ./
+        with:
+          workflow-filename: ci.yml
+          days-elapsed: 50
