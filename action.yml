@@ -1,0 +1,22 @@
+name: Warn scheduled workflow
+description: "Warn if scheduled workflow is about to be disabled due to the following GitHub policy: In a public repository, scheduled workflows are automatically disabled when no repository activity has occurred in 60 days"
+
+inputs:
+  workflow-filename:
+    description: Filename of the workflow, without the leading .github/workflows prefix.
+    required: true
+  days-elapsed:
+    description: Number of days elapsed from the previous repository activity to raise the warning.
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install dependencies
+      run: |
+        pip3 -q install -r ${GITHUB_ACTION_PATH}/scripts/requirements.txt
+      shell: bash
+    - name: Warn if scheduled workflow is about to be disabled
+      run: |
+        python3 ${GITHUB_ACTION_PATH}/scripts/warn_workflow.py "${GITHUB_REPOSITORY}" "${{ inputs.workflow-filename }}" "${{ github.event.repository.default_branch }}" "${{ inputs.days-elapsed }}"
+      shell: bash
