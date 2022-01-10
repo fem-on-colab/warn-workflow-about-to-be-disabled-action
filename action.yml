@@ -5,6 +5,10 @@ inputs:
   workflow-filename:
     description: Filename of the workflow, without the leading .github/workflows prefix.
     required: true
+  main-branch:
+    description: Name of the default branch.
+    required: false
+    default: main
   days-elapsed:
     description: Number of days elapsed from the previous repository activity to raise the warning.
     required: true
@@ -18,5 +22,5 @@ runs:
       shell: bash
     - name: Warn if scheduled workflow is about to be disabled
       run: |
-        python3 ${GITHUB_ACTION_PATH}/scripts/warn_workflow.py "${GITHUB_REPOSITORY}" "${{ inputs.workflow-filename }}" "${{ github.event.repository.default_branch }}" "${{ inputs.days-elapsed }}"
+        python3 ${GITHUB_ACTION_PATH}/scripts/warn_workflow.py "${GITHUB_REPOSITORY}" "${{ inputs.workflow-filename }}" "${{ inputs.main-branch }}" "${{ inputs.days-elapsed }}"
       shell: bash
