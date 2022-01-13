@@ -12,18 +12,25 @@ import dateutil.parser
 import requests
 
 
-def warn_workflow(repository_name: str, workflow_filename: str, main_branch: str, days_elapsed: int) -> None:
+def warn_workflow(
+    repository_name: str, workflow_filename: str, main_branch: str, days_elapsed: int, token: str
+) -> None:
     """Warn when a scheduled workflow is about to be disabled."""
+    if token != "":
+        headers = {"Authorization": f"token {token}"}
+    else:
+        headers = None
     # Get latest workflow update
     workflow_response = requests.get(
-        f"https://api.github.com/repos/{repository_name}/actions/workflows/{workflow_filename}").json()
+        f"https://api.github.com/repos/{repository_name}/actions/workflows/{workflow_filename}",
+        headers=headers).json()
     assert "path" in workflow_response
     assert workflow_response["path"] == f".github/workflows/{workflow_filename}"
     assert "updated_at" in workflow_response
     workflow_latest_update = dateutil.parser.parse(workflow_response["updated_at"])
     # Get latest commit on the main branch
     main_branch_response = requests.get(
-        f"https://api.github.com/repos/{repository_name}/branches/{main_branch}").json()
+        f"https://api.github.com/repos/{repository_name}/branches/{main_branch}", headers=headers).json()
     assert "name" in main_branch_response
     assert main_branch_response["name"] == main_branch
     assert "commit" in main_branch_response
@@ -43,5 +50,5 @@ def warn_workflow(repository_name: str, workflow_filename: str, main_branch: str
 
 
 if __name__ == "__main__":
-    assert len(sys.argv) == 5
-    warn_workflow(*(sys.argv[1:-1] + [int(sys.argv[-1])]))
+    assert len(sys.argv) == 6
+    warn_workflow(*(sys.argv[1:-2] + [int(sys.argv[-2])] + [sys.argv[-1]]))

@@ -12,6 +12,10 @@ inputs:
   days-elapsed:
     description: Number of days elapsed from the previous repository activity to raise the warning.
     required: true
+  token:
+    description: Token of the user to be provided to GiHub API.
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -22,5 +26,5 @@ runs:
       shell: bash
     - name: Warn if scheduled workflow is about to be disabled
       run: |
-        python3 ${GITHUB_ACTION_PATH}/scripts/warn_workflow.py "${GITHUB_REPOSITORY}" "${{ inputs.workflow-filename }}" "${{ inputs.main-branch }}" "${{ inputs.days-elapsed }}"
+        python3 ${GITHUB_ACTION_PATH}/scripts/warn_workflow.py "${GITHUB_REPOSITORY}" "${{ inputs.workflow-filename }}" "${{ inputs.main-branch }}" "${{ inputs.days-elapsed }}" "${{ inputs.token }}"
       shell: bash

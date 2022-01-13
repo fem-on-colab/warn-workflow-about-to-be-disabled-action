@@ -35,11 +35,13 @@ def test_warn_workflow_success(warn_workflow: types.ModuleType) -> None:
     This test will surely pass on GitHub Actions, because the workflow must be active in order for CI to run.
     This test will pass on a local clone of the repository if the workflow in this repository is being kept active.
     """
-    warn_workflow.warn_workflow("fem-on-colab/warn-workflow-about-to-be-disabled-action", "ci.yml", "main", 60)
+    warn_workflow.warn_workflow(
+        "fem-on-colab/warn-workflow-about-to-be-disabled-action", "ci.yml", "main", 60, "")
 
 
 def test_check_metadata_fail(warn_workflow: types.ModuleType) -> None:
     """Test the warn_workflow function on the current repository with days_elapsed=-1, which forces failure."""
     with pytest.raises(RuntimeError) as excinfo:
-        warn_workflow.warn_workflow("fem-on-colab/warn-workflow-about-to-be-disabled-action", "ci.yml", "main", -1)
+        warn_workflow.warn_workflow(
+            "fem-on-colab/warn-workflow-about-to-be-disabled-action", "ci.yml", "main", -1, "")
     assert "Workflow ci.yml is going to be disabled in" in str(excinfo.value)
