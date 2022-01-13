@@ -9,6 +9,7 @@ import datetime
 import sys
 
 import dateutil.parser
+import dateutil.tz
 import requests
 
 
@@ -28,6 +29,7 @@ def warn_workflow(
     assert workflow_response["path"] == f".github/workflows/{workflow_filename}"
     assert "updated_at" in workflow_response
     workflow_latest_update = dateutil.parser.parse(workflow_response["updated_at"])
+    workflow_latest_update = workflow_latest_update.astimezone(dateutil.tz.tzutc())
     # Get latest commit on the main branch
     main_branch_response = requests.get(
         f"https://api.github.com/repos/{repository_name}/branches/{main_branch}", headers=headers).json()
@@ -38,6 +40,7 @@ def warn_workflow(
     assert "committer" in main_branch_response["commit"]["commit"]
     assert "date" in main_branch_response["commit"]["commit"]["committer"]
     main_branch_latest_update = dateutil.parser.parse(main_branch_response["commit"]["commit"]["committer"]["date"])
+    main_branch_latest_update = main_branch_latest_update.astimezone(dateutil.tz.tzutc())
     # Determine how many days have passed since the latest update
     assert workflow_latest_update.tzinfo == main_branch_latest_update.tzinfo
     now = datetime.datetime.now(workflow_latest_update.tzinfo)
