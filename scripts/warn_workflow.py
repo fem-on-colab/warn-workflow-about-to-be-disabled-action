@@ -54,4 +54,4 @@ def warn_workflow(
 
 if __name__ == "__main__":
     assert len(sys.argv) == 6
-    warn_workflow(*(sys.argv[1:-2] + [int(sys.argv[-2])] + [sys.argv[-1]]))
+    warn_workflow(sys.argv[1], sys.argv[2], sys.argv[3], int(sys.argv[4]), sys.argv[5])
