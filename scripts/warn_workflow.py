@@ -25,20 +25,24 @@ def warn_workflow(
     workflow_response = requests.get(
         f"https://api.github.com/repos/{repository_name}/actions/workflows/{workflow_filename}",
         headers=headers).json()
-    assert "path" in workflow_response
-    assert workflow_response["path"] == f".github/workflows/{workflow_filename}"
-    assert "updated_at" in workflow_response
+    assert "path" in workflow_response, f"Response is {workflow_response} and does not contain 'path'"
+    assert workflow_response["path"] == f".github/workflows/{workflow_filename}", (
+        f"Path is {workflow_response['path']}")
+    assert "updated_at" in workflow_response, f"Response is {workflow_response} and does not contain 'updated_at'"
     workflow_latest_update = dateutil.parser.parse(workflow_response["updated_at"])
     workflow_latest_update = workflow_latest_update.astimezone(dateutil.tz.tzutc())
     # Get latest commit on the main branch
     main_branch_response = requests.get(
         f"https://api.github.com/repos/{repository_name}/branches/{main_branch}", headers=headers).json()
-    assert "name" in main_branch_response
-    assert main_branch_response["name"] == main_branch
-    assert "commit" in main_branch_response
-    assert "commit" in main_branch_response["commit"]
-    assert "committer" in main_branch_response["commit"]["commit"]
-    assert "date" in main_branch_response["commit"]["commit"]["committer"]
+    assert "name" in main_branch_response, f"Response is {main_branch_response} and does not contain 'name'"
+    assert main_branch_response["name"] == main_branch, f"Name is {main_branch_response['name']}"
+    assert "commit" in main_branch_response, f"Response is {main_branch_response} and does not contain 'commit'"
+    assert "commit" in main_branch_response["commit"], (
+        f"Commit is {main_branch_response['commit']} and does not contain 'commit'")
+    assert "committer" in main_branch_response["commit"]["commit"], (
+        f"Commit is {main_branch_response['commit']['commit']} and does not contain 'committer'")
+    assert "date" in main_branch_response["commit"]["commit"]["committer"], (
+        f"Commit is {main_branch_response['commit']['commit']['committer']} and does not contain 'date'")
     main_branch_latest_update = dateutil.parser.parse(main_branch_response["commit"]["commit"]["committer"]["date"])
     main_branch_latest_update = main_branch_latest_update.astimezone(dateutil.tz.tzutc())
     # Determine how many days have passed since the latest update
