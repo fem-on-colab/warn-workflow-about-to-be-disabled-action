@@ -10,6 +10,7 @@ import os
 import sys
 import types
 
+import _pytest.fixtures
 import pytest
 
 
@@ -28,7 +29,13 @@ def warn_workflow(root_directory: str) -> types.ModuleType:
     return warn_workflow
 
 
-def test_warn_workflow_success(warn_workflow: types.ModuleType) -> None:
+@pytest.fixture
+def token(request: _pytest.fixtures.SubRequest) -> str:
+    """Get token passed on the command line."""
+    return request.config.getoption("--token")  # type: ignore[no-any-return]
+
+
+def test_warn_workflow_success(warn_workflow: types.ModuleType, token: str) -> None:
     """
     Test the warn_workflow function on the current repository with days_elapsed=60 (current GitHub limit).
 
@@ -36,12 +43,12 @@ def test_warn_workflow_success(warn_workflow: types.ModuleType) -> None:
     This test will pass on a local clone of the repository if the workflow in this repository is being kept active.
     """
     warn_workflow.warn_workflow(
-        "fem-on-colab/warn-workflow-about-to-be-disabled-action", "ci.yml", "main", 60, "")
+        "fem-on-colab/warn-workflow-about-to-be-disabled-action", "ci.yml", "main", 60, token)
 
 
-def test_check_metadata_fail(warn_workflow: types.ModuleType) -> None:
+def test_check_metadata_fail(warn_workflow: types.ModuleType, token: str) -> None:
     """Test the warn_workflow function on the current repository with days_elapsed=-1, which forces failure."""
     with pytest.raises(RuntimeError) as excinfo:
         warn_workflow.warn_workflow(
-            "fem-on-colab/warn-workflow-about-to-be-disabled-action", "ci.yml", "main", -1, "")
+            "fem-on-colab/warn-workflow-about-to-be-disabled-action", "ci.yml", "main", -1, token)
     assert "Workflow ci.yml is going to be disabled in" in str(excinfo.value)
