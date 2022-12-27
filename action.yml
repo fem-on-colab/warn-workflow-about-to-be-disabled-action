@@ -15,7 +15,7 @@ inputs:
   token:
     description: Token of the user to be provided to GiHub API.
     required: false
-    default: ""
+    default: ${{ github.token }}
 
 runs:
   using: "composite"
