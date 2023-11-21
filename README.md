@@ -22,7 +22,7 @@ on:
     - cron: "0 0 * * *"
 
 jobs:
-  test:
+  warn:
     runs-on: ubuntu-latest
     if: github.repository == '[YOUR ORGANIZATION]/[YOUR REPOSITORY]' && github.ref == 'refs/heads/[YOUR MAIN BRANCH]' && github.event_name == 'schedule'
     steps:
@@ -73,10 +73,13 @@ where `[YOUR ORGANIZATION]`, `[YOUR REPOSITORY]` and `[YOUR MAIN BRANCH]` are pl
 7. *Is the `token` option required for public repositories?*\
    The `token` option is typically only required for private repositories. See [Creating a fine-grained personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token)  on GitHub documentation.
 
-8. *Why is there a `if:` in the quickstart above?*\
+8. *Do you suggest to run this action as a step of an existing job, or in a standalone job?*\
+   The action works in both cases, but we suggest to run it in a standalone job (such as the `warn` job in the quickstart above) so that, in case of failure, it is immediately clear that the failing job is the warning about scheduled workflows, rather than other parts of the existing CI infrastracture.
+
+9. *Why is there a `if:` in the quickstart above?*\
    The condition `github.event_name == 'schedule'` is to ensure that this action does not get executed on runs that are not scheduled workflow runs.\
    The condition `github.repository == '[YOUR ORGANIZATION]/[YOUR REPOSITORY]'` is to avoid running this action on forks, as fork owners are typically not interested in running scheduled workflows.\
    The condition `github.ref == 'refs/heads/[YOUR MAIN BRANCH]'`, when listed alongside `github.event_name == 'schedule'`, is actually useless, but serves as a reminder that scheduled workflow runs only happen on the main branch of the repository.
 
-9. *Does this action violate GitHub policies in terms of automatically disabling unused workflows?*\
-   The web interface sometimes offers a "Continue running" button when scheduled workflows are approaching the 60 days deadline, but the availability of this button is not notified in any way to the repository maintainer. In the author's opinion, this action adheres to the spirit of the policy introduced by GitHub, in the sense that it merely provides an automated notification. Indeed, the repository maintainer still has to manually confirm their intention of keeping the scheduled workflow running, just as if they clicked on the "Continue running" button on the web page. In case of differing opinions, please contact [the author of this action](https://www.francescoballarin.it/).
+10. *Does this action violate GitHub policies in terms of automatically disabling unused workflows?*\
+    The web interface sometimes offers a "Continue running" button when scheduled workflows are approaching the 60 days deadline, but the availability of this button is not notified in any way to the repository maintainer. In the author's opinion, this action adheres to the spirit of the policy introduced by GitHub, in the sense that it merely provides an automated notification. Indeed, the repository maintainer still has to manually confirm their intention of keeping the scheduled workflow running, just as if they clicked on the "Continue running" button on the web page. In case of differing opinions, please contact [the author of this action](https://www.francescoballarin.it/).
