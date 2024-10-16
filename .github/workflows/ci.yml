@@ -12,7 +12,28 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  test_python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --break-system-packages -q -r scripts/requirements.txt -r tests/requirements.txt
+      - name: Run tests
+        run: |
+          python3 -m pytest --token "${{ github.token }}" tests
+
+  test_action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Warn if scheduled workflow is about to be disabled
+        uses: ./
+        with:
+          workflow-filename: ci.yml
+          days-elapsed: 50
+
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,11 +52,3 @@ jobs:
       - name: Run yamllint
         run: |
           python3 -m yamllint -d "{extends: default, rules: {document-start: {present: false}, line-length: disable, truthy: {check-keys: false}}}" .
-      - name: Run tests
-        run: |
-          python3 -m pytest --token "${{ github.token }}" tests
-      - name: Warn if scheduled workflow is about to be disabled
-        uses: ./
-        with:
-          workflow-filename: ci.yml
-          days-elapsed: 50
