@@ -24,7 +24,10 @@ jobs:
           python3 -m pytest --token "${{ github.token }}" tests
 
   test_action:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Warn if scheduled workflow is about to be disabled
