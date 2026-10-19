@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: MIT
 """Script to warn when a scheduled workflow is about to be disabled."""
 
-import datetime
+import datetime as dt
 import sys
 
 import dateutil.parser
@@ -47,7 +47,7 @@ def warn_workflow(
     main_branch_latest_update = main_branch_latest_update.astimezone(dateutil.tz.tzutc())
     # Determine how many days have passed since the latest update
     assert workflow_latest_update.tzinfo == main_branch_latest_update.tzinfo
-    now = datetime.datetime.now(workflow_latest_update.tzinfo)
+    now = dt.datetime.now(workflow_latest_update.tzinfo)
     days_diff = (now - max(workflow_latest_update, main_branch_latest_update)).days
     if days_diff >= days_elapsed:
         raise RuntimeError(
